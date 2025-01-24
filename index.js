@@ -12,6 +12,7 @@ function parseCommand(command) {
 }
 
 async function run() {
+  core.debug("これはエラー原因調査を目的とした改修verです")
   try {
     const ecs = new aws.ECS({
       customUserAgent: 'amazon-ecs-run-task-definition-for-github-actions'
@@ -58,10 +59,15 @@ async function run() {
           ]
         }
       }).promise();
+      
     } catch (error) {
       core.setFailed("Failed to start a task in ECS: " + error.message);
       throw(error);
     }
+    if(taskResponse.failures){
+      throw new Error(JSON.stringify(taskResponse.failures))
+    }
+    
     const taskArn = taskResponse.tasks[0].taskArn;
     core.setOutput('task-arn', taskArn);
     const taskId = taskArn.split('/').pop();
