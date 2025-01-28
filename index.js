@@ -64,8 +64,7 @@ async function run() {
       core.setFailed("Failed to start a task in ECS: " + error.message);
       throw(error);
     }
-    core.info(JSON.stringify(taskResponse))
-    if(taskResponse.failures){
+    if(!taskResponse.tasks || taskResponse.tasks.length == 0){
       throw new Error(JSON.stringify(taskResponse.failures))
     }
     
